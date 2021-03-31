@@ -3,6 +3,13 @@ using System;
 
 public class Grass : Node2D
 {
+  private PackedScene _grassEffect;
+
+  public override void _Ready()
+  {
+    _grassEffect = ResourceLoader.Load<PackedScene>("res://src/Effects/GrassEffect.tscn");
+  }
+
   // Any area that overlaps with this Class will trigger this method
   public void OnHurtBoxAreaEntered(Area2D area)
   {
@@ -12,11 +19,8 @@ public class Grass : Node2D
 
   private void CreateGrassEffect()
   {
-    PackedScene grassEffect = ResourceLoader.Load("res://src/Effects/GrassEffect.tscn") as PackedScene;
-    Node2D grassEffectInstance = grassEffect.Instance() as Node2D;
+    Node2D grassEffectInstance = _grassEffect.Instance() as Node2D;
     grassEffectInstance.GlobalPosition = this.GlobalPosition;
-
-    Node2D world = GetTree().CurrentScene as Node2D;
-    world.AddChild(grassEffectInstance);
+    GetParent().AddChild(grassEffectInstance);
   }
 }

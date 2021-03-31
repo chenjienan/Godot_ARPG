@@ -12,12 +12,12 @@ public class Player : KinematicBody2D
   private Vector2 velocity = Vector2.Zero;
   private Vector2 rollVector = Vector2.Down;
 
-  private AnimationPlayer animationPlayer;
-  private AnimationTree animationTree;
-  private AnimationNodeStateMachinePlayback animationState;
+  private AnimationPlayer _animationPlayer;
+  private AnimationTree _animationTree;
+  private AnimationNodeStateMachinePlayback _animationState;
 
-  private PlayerHitBox playerHitBox;
-  private State state = State.MOVE;
+  private PlayerHitBox _playerHitBox;
+  private State _state = State.MOVE;
 
   public enum State
   {
@@ -28,34 +28,37 @@ public class Player : KinematicBody2D
 
   public override void _Ready()
   {
-    animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
-    animationTree = GetNode<AnimationTree>("AnimationTree");
+    _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
+    _animationTree = GetNode<AnimationTree>("AnimationTree");
 
     // locate the path from root
     // Note: can use "copy node path": HitboxPivot/Hitbox
-    playerHitBox = GetNode<PlayerHitBox>("HitboxPivot/Hitbox");
-    playerHitBox.KnockBackVector = rollVector;  // same direction as rolling
+    _playerHitBox = GetNode<PlayerHitBox>("HitboxPivot/Hitbox");
+    _playerHitBox.KnockBackVector = rollVector;  // same direction as rolling
 
     // Activate animation tree
-    animationTree.Active = true;
-    animationState = (AnimationNodeStateMachinePlayback)animationTree.Get("parameters/playback");
+    _animationTree.Active = true;
+    _animationState = (AnimationNodeStateMachinePlayback)_animationTree.Get("parameters/playback");
   }
 
   public override void _PhysicsProcess(float delta)
   {
-    switch (state)
+    switch (_state)
     {
       case State.MOVE:
         MoveState(delta);
         break;
+
       case State.ATTACK:
         AttackState(delta);
         break;
+
       case State.ROLL:
         RollState(delta);
         break;
+
       default:
-        throw new Exception($"Illegal enum value {state}");
+        throw new Exception($"Illegal enum value {_state}");
     }
   }
 
@@ -73,22 +76,22 @@ public class Player : KinematicBody2D
       // Set roll direction
       rollVector = inputVector;
       // Set knowback direction
-      playerHitBox.KnockBackVector = rollVector;
+      _playerHitBox.KnockBackVector = rollVector;
 
       // Manage animation: set blend position
-      animationTree.Set("parameters/Idle/blend_position", inputVector);
-      animationTree.Set("parameters/Run/blend_position", inputVector);
-      animationTree.Set("parameters/Attack/blend_position", inputVector);
-      animationTree.Set("parameters/Roll/blend_position", inputVector);
+      _animationTree.Set("parameters/Idle/blend_position", inputVector);
+      _animationTree.Set("parameters/Run/blend_position", inputVector);
+      _animationTree.Set("parameters/Attack/blend_position", inputVector);
+      _animationTree.Set("parameters/Roll/blend_position", inputVector);
 
       // Run state
-      animationState.Travel("Run");
+      _animationState.Travel("Run");
       velocity = velocity.MoveToward(inputVector * MaxSpeed, Acceleration * delta);
     }
     else
     {
       // Idle state
-      animationState.Travel("Idle");
+      _animationState.Travel("Idle");
       velocity = velocity.MoveToward(Vector2.Zero, Friction * delta);
     }
 
@@ -97,40 +100,40 @@ public class Player : KinematicBody2D
     // Transit to attack state
     if (Input.IsActionJustPressed("attack"))
     {
-      state = State.ATTACK;
+      _state = State.ATTACK;
     }
 
     // Transit to roll state
     if (Input.IsActionJustPressed("roll"))
     {
-      state = State.ROLL;
+      _state = State.ROLL;
     }
   }
 
   private void RollState(float delta)
   {
     velocity = rollVector * RollSpeed;
-    animationState.Travel("Roll");
+    _animationState.Travel("Roll");
     velocity = MoveAndSlide(velocity);
   }
 
   private void AttackState(float delta)
   {
     velocity = Vector2.Zero;
-    animationState.Travel("Attack");
+    _animationState.Travel("Attack");
   }
 
 
   // listener method
   public void AttackAnimationFinished()
   {
-    state = State.MOVE;
+    _state = State.MOVE;
   }
 
   // listener method
   public void RollAnimationFinished()
   {
     velocity = velocity * (float)0.8;
-    state = State.MOVE;
+    _state = State.MOVE;
   }
 }
