@@ -6,7 +6,10 @@
 collision_layer = 0
 collision_mask = 0
 script = ExtResource( 1 )
-IsEnabled = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-[connection signal="area_entered" from="." to="." method="OnHurtBoxAreaEntered"]
+
+[node name="Timer" type="Timer" parent="."]
+[connection signal="InvincibilityDisabled" from="." to="." method="OnInvincibilityDisabled"]
+[connection signal="InvincibilityEnabled" from="." to="." method="OnInvincibilityEnabled"]
+[connection signal="timeout" from="Timer" to="." method="OnTimerTimeout"]

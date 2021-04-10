@@ -17,7 +17,10 @@ public class Player : KinematicBody2D
   private AnimationNodeStateMachinePlayback _animationState;
 
   private PlayerHitBox _playerHitBox;
+  private HurtBox _playerHurtBox;
   private State _state = State.MOVE;
+
+  private Stats _playerStats;
 
   public enum State
   {
@@ -31,10 +34,16 @@ public class Player : KinematicBody2D
     _animationPlayer = GetNode<AnimationPlayer>("AnimationPlayer");
     _animationTree = GetNode<AnimationTree>("AnimationTree");
 
+    // Global singleton autoload
+    _playerStats = GetNode<Stats>("/root/PlayerStats");
+    _playerStats.Connect("NoHealth", this, "queue_free");
+
     // locate the path from root
     // Note: can use "copy node path": HitboxPivot/Hitbox
     _playerHitBox = GetNode<PlayerHitBox>("HitboxPivot/Hitbox");
     _playerHitBox.KnockBackVector = rollVector;  // same direction as rolling
+
+    _playerHurtBox = GetNode<HurtBox>("HurtBox");
 
     // Activate animation tree
     _animationTree.Active = true;
@@ -135,5 +144,12 @@ public class Player : KinematicBody2D
   {
     velocity = velocity * (float)0.8;
     _state = State.MOVE;
+  }
+
+  public void OnPlayerHurtBoxAreaEntered(Area2D area)
+  {
+    _playerStats.Health -= 1;
+    _playerHurtBox.StartInvincibility(0.25f);
+    _playerHurtBox.CreateHitEffect();
   }
 }

@@ -15,6 +15,8 @@ public class Bat : KinematicBody2D
   private AnimatedSprite _animatedSprite;
   private PlayerDectionZone _playerDectionZone;
   private Stats _stats;
+  private HurtBox _enemyHurtBox;
+
   private State _state = State.CHASE;
 
   public enum State
@@ -31,6 +33,8 @@ public class Bat : KinematicBody2D
     _animatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
     _stats = GetNode<Stats>("Stats");
     GD.Print($"Bat {this.Name} health: {_stats.Health}");
+
+    _enemyHurtBox = GetNode<HurtBox>("HurtBox");
   }
 
   public override void _PhysicsProcess(float delta)
@@ -83,12 +87,18 @@ public class Bat : KinematicBody2D
     }
   }
 
+  // listener
   public void OnHurtBoxAreaEntered(PlayerHitBox area)
   {
     _stats.Health -= area.Damage;
     _knockback = area.KnockBackVector * 100;
+    GD.Print(_stats.Health);
+
+    _enemyHurtBox.StartInvincibility(0.4f);
+    _enemyHurtBox.CreateHitEffect();
   }
 
+  // listener
   public void OnStatsNoHealth()
   {
     QueueFree();
