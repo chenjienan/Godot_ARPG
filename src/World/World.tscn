@@ -7,7 +7,7 @@
 [ext_resource path="res://src/Actors/Player/Player.tscn" type="PackedScene" id=5]
 [ext_resource path="res://src/World/Grass.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/Actors/Enemies/Bat.tscn" type="PackedScene" id=7]
-[ext_resource path="res://src/Screens/HealthUI.cs" type="Script" id=8]
+[ext_resource path="res://src/Screens/HealthUI.tscn" type="PackedScene" id=8]
 
 [sub_resource type="TileSet" id=1]
 resource_local_to_scene = true
@@ -556,18 +556,8 @@ position = Vector2( 248, 168 )
 [node name="Bat3" parent="YSort" instance=ExtResource( 7 )]
 position = Vector2( 64, 88 )
 
-[node name="HealthUI" type="Control" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-script = ExtResource( 8 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Label" type="Label" parent="HealthUI"]
-margin_right = 40.0
-margin_bottom = 14.0
-text = "HP = 4"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="HealthUI" parent="." instance=ExtResource( 8 )]
+margin_left = 8.0
+margin_top = 8.0
+margin_right = 53.0
+margin_bottom = 20.0
