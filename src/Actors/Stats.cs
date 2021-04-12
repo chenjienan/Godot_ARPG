@@ -4,11 +4,13 @@ using System;
 public class Stats : Node
 {
   [Signal] public delegate void NoHealth();
-  private double _health;
-  private double _maxHealth;
+  [Signal] public delegate void HealthChanged(int value);
+
+  private int _health;
+  private int _maxHealth;
 
   [Export]
-  public double MaxHealth
+  public int MaxHealth
   {
     get
     {
@@ -25,7 +27,7 @@ public class Stats : Node
     }
   }
 
-  public double Health
+  public int Health
   {
     get
     {
@@ -36,6 +38,7 @@ public class Stats : Node
     {
       // value is a placeholder for the value that is assigned to the property
       _health = value;
+      EmitSignal("HealthChanged", _health);
       if (_health <= 0)
       {
         EmitSignal("NoHealth");

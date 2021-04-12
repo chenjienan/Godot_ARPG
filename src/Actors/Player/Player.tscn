@@ -658,7 +658,6 @@ __meta__ = {
 position = Vector2( 15, 0 )
 collision_mask = 8
 script = ExtResource( 2 )
-Damage = 0.9
 
 [node name="CollisionShape2D" parent="HitboxPivot/Hitbox" index="0"]
 shape = SubResource( 46 )
